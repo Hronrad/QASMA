@@ -4,6 +4,7 @@
   "private": true,
   "description": "Public, frontend-only visualization of the QASMA v3.2 multi-agent architecture.",
   "scripts": {
+    "build": "node scripts/build.mjs",
     "dev": "node scripts/serve.mjs",
     "check": "node scripts/check.mjs"
   },
