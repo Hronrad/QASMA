@@ -6,6 +6,8 @@ const required = [
   "README.md", "index.html", "architecture/qasma-v3.2.json", "workbench/index.html",
   "workbench/dashboard.html", "workbench/candidates.html", "workbench/events.html",
   "workbench/data/runs.json", "workbench/data/demo-run.json",
+  "assets/qasma-system-architecture.png", "assets/qasma-search-loop.png",
+  "assets/qasma-validation-evidence.png", "assets/qasma-workbench.png",
 ];
 
 for (const file of required) await readFile(join(root, file));
