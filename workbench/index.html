@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QASMA v3.2 公开工作流画布</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="workspace-page">
+  <header class="app-header">
+    <a class="app-brand" href="./index.html">
+      <span class="brand-mark">Q</span>
+      <span><b>QASMA v3.2</b><small>公开架构工作台</small></span>
+    </a>
+    <nav class="app-nav" aria-label="工作台页面">
+      <a class="active" href="./index.html">工作流</a>
+      <a href="./dashboard.html">运行总览</a>
+      <a href="./candidates.html">候选线路</a>
+      <a href="./events.html">事件日志</a>
+    </nav>
+    <div class="header-run">
+      <select id="run-select" aria-label="选择实验"></select>
+      <span id="live-badge" class="status-badge">等待数据</span>
+    </div>
+  </header>
+
+  <main class="workflow-main">
+    <div class="canvas-toolbar">
+      <label class="canvas-search">
+        <span>⌕</span><input id="node-search" placeholder="查找 Agent、编译器或评价器">
+      </label>
+      <label class="toggle-control"><input id="active-only" type="checkbox"><span></span>只看本次路径</label>
+      <button id="layout-toggle" class="layout-toggle" title="切换工作流排布方式">布局：横向</button>
+      <div class="toolbar-divider"></div>
+      <button id="zoom-out" title="缩小">−</button>
+      <button id="zoom-in" title="放大">＋</button>
+      <button id="zoom-reset" title="恢复 100%">100%</button>
+      <button id="fit-graph" title="适配完整架构">适配全图</button>
+      <span id="zoom-label" class="zoom-label">100%</span>
+    </div>
+
+    <div class="canvas-legend">
+      <span><i class="legend-node llm"></i>LLM Agent</span>
+      <span><i class="legend-dot completed"></i>已完成</span>
+      <span><i class="legend-dot running"></i>运行中</span>
+      <span><i class="legend-dot idle"></i>未触发</span>
+      <span><i class="legend-port input"></i>输入端口</span>
+      <span><i class="legend-port output"></i>输出端口</span>
+      <span title="普通的输入输出依赖；上游输出作为下游输入"><i class="legend-line data"></i>普通数据流</span>
+      <span title="该依赖属于完整架构，但本次运行没有经过"><i class="legend-line inactive"></i>本次未经过</span>
+      <span><i class="legend-line conditional"></i>条件分支</span>
+      <span><i class="legend-line feedback"></i>反馈环</span>
+      <span><i class="legend-line observation"></i>证据/预算记账</span>
+    </div>
+
+    <div id="workflow-canvas" class="workflow-canvas" tabindex="0" aria-label="可平移缩放的 QASMA 工作流">
+      <div id="canvas-loading" class="canvas-loading"><span></span>正在加载运行数据与工作流……</div>
+      <svg id="workflow-svg" class="workflow-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+            <circle cx="1.5" cy="1.5" r="1.2" fill="#38504b" opacity=".42"/>
+          </pattern>
+          <filter id="node-shadow" x="-20%" y="-30%" width="140%" height="170%">
+            <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000" flood-opacity=".42"/>
+          </filter>
+        </defs>
+        <rect class="canvas-grid" x="-10000" y="-10000" width="20000" height="20000" fill="url(#dot-grid)"/>
+        <g id="viewport-group">
+          <g id="part-layer"></g>
+          <g id="edge-layer"></g>
+          <g id="phase-layer"></g>
+          <g id="node-layer"></g>
+        </g>
+      </svg>
+      <div class="minimap-shell">
+        <svg id="minimap" viewBox="0 0 240 110"></svg>
+      </div>
+    </div>
+  </main>
+
+  <aside id="node-inspector" class="inspector" aria-hidden="true">
+    <div class="inspector-head">
+      <div><span id="inspector-kind"></span><h2 id="inspector-title">节点详情</h2><small id="inspector-status"></small></div>
+      <button id="close-inspector" aria-label="关闭">×</button>
+    </div>
+    <div class="inspector-tabs">
+      <button class="active" data-tab="definition">节点定义</button>
+      <button data-tab="runtime">本次运行</button>
+      <button data-tab="io">实际 I/O</button>
+      <button data-tab="events">节点事件</button>
+    </div>
+    <div id="inspector-body" class="inspector-body"></div>
+  </aside>
+
+  <script type="module" src="workflow.js"></script>
+</body>
+</html>

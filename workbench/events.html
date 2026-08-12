@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QASMA 公开事件日志</title><link rel="stylesheet" href="styles.css"></head>
+<body class="content-page">
+  <header class="app-header">
+    <a class="app-brand" href="./index.html"><span class="brand-mark">Q</span><span><b>QASMA v3.2</b><small>公开架构工作台</small></span></a>
+    <nav class="app-nav"><a href="./index.html">工作流</a><a href="./dashboard.html">运行总览</a><a href="./candidates.html">候选线路</a><a class="active" href="./events.html">事件日志</a></nav>
+    <div class="header-run"><select id="run-select"></select><span id="live-badge" class="status-badge">等待数据</span></div>
+  </header>
+  <main class="content-main">
+    <header class="page-title"><div><span>PUBLIC DEMO</span><h1>事件日志</h1><p>按事件类型、节点或文本检索脱敏的 append-only evidence 示例。</p></div></header>
+    <section class="event-toolbar content-card">
+      <div class="event-filters"><button class="active" data-filter="all">全部</button><button data-filter="agent">LLM</button><button data-filter="candidate">候选</button><button data-filter="evaluator">评价</button><button data-filter="system">系统</button></div>
+      <input id="event-search" placeholder="搜索事件、Agent、candidate 或内容">
+    </section>
+    <section id="timeline" class="timeline-page"></section>
+  </main>
+  <script type="module" src="events.js"></script>
+</body></html>

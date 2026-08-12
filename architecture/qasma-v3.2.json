@@ -1,0 +1,153 @@
+{
+  "version": "3.2",
+  "scope": "public-frontend-skeleton",
+  "nodes": [
+    {
+      "id": "run_control", "name": "任务与运行控制", "kind": "controller", "category": "控制与任务理解", "layer": 0, "order": 0,
+      "implementation": "public_skeleton", "description": "载入公开 TaskSpec，选择任务能力并驱动逐轮搜索。", "activation": "每次运行启用。",
+      "inputs": ["TaskSpec", "RunConfig", "Agent interfaces"], "outputs": ["Task card", "active capabilities", "round state"],
+      "interface": "TaskSpec → RunState", "failure": "任务契约不完整时停止，不构造伪造结果。"
+    },
+    {
+      "id": "evidence_budget", "name": "证据与预算账本", "kind": "store_agent", "category": "控制与治理", "layer": 0, "order": 1,
+      "implementation": "public_skeleton", "description": "记录事件、评价预算与可重放证据。", "activation": "每次运行启用。",
+      "inputs": ["runtime events", "budget increments"], "outputs": ["append-only evidence", "budget counters"],
+      "interface": "Event → EvidenceRecord", "failure": "预算耗尽后禁止新的高成本评价。"
+    },
+    {
+      "id": "sota_gate", "name": "SOTA 门禁", "kind": "governance_agent", "category": "控制与治理", "layer": 1, "order": 0,
+      "implementation": "optional", "description": "检查基线作用域、证据来源和声明资格。", "activation": "需要正式可比声明时启用。",
+      "inputs": ["scope", "registered evidence"], "outputs": ["comparison audit", "claim eligibility"],
+      "interface": "EvidenceScope → Audit", "failure": "条件不满足时关闭声明资格。"
+    },
+    {
+      "id": "task_backend", "name": "任务能力适配器", "kind": "task_plugin", "category": "任务后端", "layer": 1, "order": 1,
+      "implementation": "optional", "description": "为当前量子任务提供合法动作、探针与确定性评价接口。", "activation": "按任务族选择。",
+      "inputs": ["TaskSpec", "capability request"], "outputs": ["ActionLibrary", "probe spec", "evaluator adapter"],
+      "interface": "TaskSpec → TaskCapabilities", "failure": "缺失必需能力时拒绝运行。"
+    },
+    {
+      "id": "scientific_director", "name": "Scientific Director", "kind": "llm_agent", "category": "LLM 科学决策", "layer": 2, "order": 0,
+      "implementation": "public_skeleton", "description": "设定本轮科学目标、分配角色任务并决定条件分支。", "activation": "每轮启用。",
+      "inputs": ["task card", "archive summary", "stagnation", "audit"], "outputs": ["ControlDecision"],
+      "interface": "RoundContext → ControlDecision", "failure": "输出不满足结构化契约时停止当前运行。", "model_role": "scientific_director"
+    },
+    {
+      "id": "sota_research", "name": "SOTA Research Agent", "kind": "llm_agent", "category": "LLM 科学决策", "layer": 2, "order": 1,
+      "implementation": "optional", "description": "从已登记来源整理可比较基线、条件与风险。", "activation": "Director 与任务配置共同触发。",
+      "inputs": ["task scope", "registered sources"], "outputs": ["SOTA card"],
+      "interface": "RegisteredSources → SOTACard", "failure": "不得补造来源或数值。", "model_role": "sota_research"
+    },
+    {
+      "id": "theory_grammar", "name": "Theory & Grammar Architect", "kind": "llm_agent", "category": "LLM 理论设计", "layer": 3, "order": 0,
+      "implementation": "public_skeleton", "description": "提出可证伪机制，并选择 primitive、block 与开放通道的搜索语法。", "activation": "每轮启用。",
+      "inputs": ["ControlDecision", "legal actions", "archive", "SOTA card"], "outputs": ["TheoryGrammarPlan", "hypotheses"],
+      "interface": "ScientificContext → GrammarPlan", "failure": "越界动作在确定性边界处被拒绝。", "model_role": "theory_grammar"
+    },
+    {
+      "id": "theory_evolver", "name": "Theory Evolver", "kind": "llm_agent", "category": "LLM 候选生成", "layer": 4, "order": 0,
+      "implementation": "public_skeleton", "description": "基于代数、对称性和结构机制提出完整候选。", "activation": "每轮并行启用。",
+      "inputs": ["grammar plan", "hypotheses", "archive"], "outputs": ["CandidateProposal batch"],
+      "interface": "GrammarPlan → CandidateProposal[]", "failure": "非法候选交给规范化层拒绝。", "model_role": "theory_evolver"
+    },
+    {
+      "id": "empirical_evolver", "name": "Empirical Evolver", "kind": "llm_agent", "category": "LLM 候选生成", "layer": 4, "order": 1,
+      "implementation": "public_skeleton", "description": "比较成功与失败模式，编辑有效 motif 并缓解资源瓶颈。", "activation": "每轮并行启用。",
+      "inputs": ["evaluated archive", "grammar plan"], "outputs": ["CandidateProposal batch"],
+      "interface": "ArchiveView → CandidateProposal[]", "failure": "空候选或非法动作被拒绝。", "model_role": "empirical_evolver"
+    },
+    {
+      "id": "novelty_evolver", "name": "Novelty Evolver", "kind": "llm_agent", "category": "LLM 候选生成", "layer": 4, "order": 2,
+      "implementation": "optional", "description": "在停滞时提出结构上不同的表示或机制。", "activation": "停滞或分布外探索需要时启用。",
+      "inputs": ["archive diversity", "stagnation", "grammar plan"], "outputs": ["diverse CandidateProposal batch"],
+      "interface": "StagnationContext → CandidateProposal[]", "failure": "未触发时保持旁路。", "model_role": "novelty_evolver"
+    },
+    {
+      "id": "candidate_normalization", "name": "候选规范化与去重", "kind": "verifier_agent", "category": "确定性候选处理", "layer": 5, "order": 0,
+      "implementation": "public_skeleton", "description": "合并并行候选，执行合法性修复、资源约束、规范化和等价去重。", "activation": "所有候选必经。",
+      "inputs": ["CandidateProposal batches", "ActionLibrary"], "outputs": ["legal canonical candidates", "rejection reasons"],
+      "interface": "CandidateProposal[] → CanonicalCandidate[]", "failure": "不可修复、越界或重复候选被拒绝。"
+    },
+    {
+      "id": "dsl_contract_compile", "name": "Typed DSL 与契约编译", "kind": "compiler_agent", "category": "程序级编译", "layer": 6, "order": 0,
+      "implementation": "public_skeleton", "description": "把候选编译为 typed program、资源摘要、误差关系和待验证条件。", "activation": "每个非重复候选必经。",
+      "inputs": ["canonical candidate", "task limits"], "outputs": ["typed program", "contract summary", "verification conditions"],
+      "interface": "CanonicalCandidate → ContractArtifact", "failure": "已证伪候选淘汰；未知状态保留在开放实证通道。"
+    },
+    {
+      "id": "lowcost_surrogate", "name": "低成本评价与 Surrogate", "kind": "evaluator_agent", "category": "多保真评价", "layer": 7, "order": 0,
+      "implementation": "public_skeleton", "description": "执行 F0–F2 检查、探针与不确定性估计，为高成本评价提供排序信号。", "activation": "合法 typed candidate 必经。",
+      "inputs": ["ContractArtifact", "probe set", "evaluation history"], "outputs": ["proxy metrics", "uncertainty", "acquisition score"],
+      "interface": "ContractArtifact → FidelityAssessment", "failure": "低成本信号不能单独形成最终正确性声明。"
+    },
+    {
+      "id": "independent_critic", "name": "Independent Critic", "kind": "llm_agent", "category": "LLM 独立审查", "layer": 7, "order": 1,
+      "implementation": "public_skeleton", "description": "攻击候选机制、设计反例测试并建议评价优先级。", "activation": "每轮启用。",
+      "inputs": ["candidate summaries", "proxy metrics", "critic focus"], "outputs": ["CritiqueBatch"],
+      "interface": "CandidateEvidence → CritiqueBatch", "failure": "Critic 不得自行发明量子指标。", "model_role": "independent_critic"
+    },
+    {
+      "id": "multifidelity_route", "name": "多保真路由", "kind": "router_agent", "category": "多保真评价", "layer": 8, "order": 0,
+      "implementation": "public_skeleton", "description": "结合契约、代理指标、不确定性、批判意见与审计配额决定晋级。", "activation": "每轮批判后启用。",
+      "inputs": ["FidelityAssessment", "CritiqueBatch", "remaining budget"], "outputs": ["full-evaluation queue", "routed-out candidates"],
+      "interface": "Assessments → EvaluationQueue", "failure": "未校准代理模型不能独占预算。"
+    },
+    {
+      "id": "full_evaluation", "name": "完整与可认证评价", "kind": "evaluator_agent", "category": "精确评价", "layer": 9, "order": 0,
+      "implementation": "public_skeleton", "description": "对晋级候选执行完整数值评价、资源核算以及适用的精确或形式验证。", "activation": "路由晋级且预算可用时启用。",
+      "inputs": ["EvaluationQueue", "task evaluator"], "outputs": ["verified metrics", "resource vector", "certificate artifact"],
+      "interface": "EvaluationRequest → VerifiedAssessment", "failure": "超时或未知必须显式记录，不能伪装为证书。"
+    },
+    {
+      "id": "certificate_archive", "name": "证书、档案与研究记忆", "kind": "archive_agent", "category": "证据归档与反馈", "layer": 10, "order": 0,
+      "implementation": "public_skeleton", "description": "保存可重放证据、Pareto 候选、失败簇和跨轮研究记忆。", "activation": "评价完成后启用。",
+      "inputs": ["VerifiedAssessment", "critic evidence", "provenance"], "outputs": ["EvidenceRecord", "archive summary", "next-round context"],
+      "interface": "VerifiedAssessment → ResearchMemory", "failure": "缺少来源与重放信息的条目不能晋升为正式证据。"
+    }
+  ],
+  "edges": [
+    {"source": "run_control", "target": "evidence_budget", "label": "持续记账", "type": "observation"},
+    {"source": "run_control", "target": "sota_gate", "label": "正式声明任务", "type": "conditional"},
+    {"source": "run_control", "target": "task_backend", "label": "任务适配", "type": "conditional"},
+    {"source": "run_control", "target": "scientific_director", "label": "task card", "type": "data"},
+    {"source": "sota_gate", "target": "scientific_director", "label": "audit", "type": "data"},
+    {"source": "scientific_director", "target": "sota_research", "label": "按需调研", "type": "conditional"},
+    {"source": "scientific_director", "target": "theory_grammar", "label": "round goal", "type": "data"},
+    {"source": "sota_research", "target": "theory_grammar", "label": "SOTA card", "type": "conditional"},
+    {"source": "task_backend", "target": "theory_grammar", "label": "legal actions", "type": "data"},
+    {"source": "theory_grammar", "target": "theory_evolver", "label": "并行生成", "type": "data"},
+    {"source": "theory_grammar", "target": "empirical_evolver", "label": "并行生成", "type": "data"},
+    {"source": "scientific_director", "target": "novelty_evolver", "label": "停滞时", "type": "conditional"},
+    {"source": "theory_evolver", "target": "candidate_normalization", "label": "proposals", "type": "data"},
+    {"source": "empirical_evolver", "target": "candidate_normalization", "label": "proposals", "type": "data"},
+    {"source": "novelty_evolver", "target": "candidate_normalization", "label": "diverse proposals", "type": "conditional"},
+    {"source": "candidate_normalization", "target": "dsl_contract_compile", "label": "canonical candidate", "type": "data"},
+    {"source": "dsl_contract_compile", "target": "lowcost_surrogate", "label": "typed + F0", "type": "data"},
+    {"source": "dsl_contract_compile", "target": "independent_critic", "label": "contract summary", "type": "data"},
+    {"source": "lowcost_surrogate", "target": "independent_critic", "label": "F1/F2", "type": "data"},
+    {"source": "lowcost_surrogate", "target": "multifidelity_route", "label": "acquisition", "type": "data"},
+    {"source": "independent_critic", "target": "multifidelity_route", "label": "priority/risk", "type": "data"},
+    {"source": "multifidelity_route", "target": "full_evaluation", "label": "晋级", "type": "conditional"},
+    {"source": "multifidelity_route", "target": "evidence_budget", "label": "检查预算", "type": "observation"},
+    {"source": "full_evaluation", "target": "certificate_archive", "label": "metrics + certificate", "type": "data"},
+    {"source": "full_evaluation", "target": "evidence_budget", "label": "增加 B_full", "type": "observation"},
+    {"source": "certificate_archive", "target": "scientific_director", "label": "下一轮反馈", "type": "feedback"},
+    {"source": "certificate_archive", "target": "theory_grammar", "label": "证据与反例", "type": "feedback"},
+    {"source": "certificate_archive", "target": "evidence_budget", "label": "持久化", "type": "observation"}
+  ],
+  "phases": [
+    {"layer": 0, "name": "任务、运行与证据"}, {"layer": 1, "name": "治理与任务能力"},
+    {"layer": 2, "name": "科学决策"}, {"layer": 3, "name": "理论与语法"},
+    {"layer": 4, "name": "并行候选生成"}, {"layer": 5, "name": "候选规范化"},
+    {"layer": 6, "name": "程序级编译"}, {"layer": 7, "name": "低成本评价与批判"},
+    {"layer": 8, "name": "多保真路由"}, {"layer": 9, "name": "完整评价"},
+    {"layer": 10, "name": "证书、档案与反馈"}
+  ],
+  "parts": [
+    {"id": "task_governance", "name": "Part 1 · 任务与治理", "description": "任务解析、预算证据、声明门禁和任务能力。", "layers": [0, 1], "color": "cyan"},
+    {"id": "llm_scientific_search", "name": "Part 2 · LLM 科学搜索", "description": "Director、理论语法与并行候选生成。", "layers": [2, 3, 4], "color": "purple"},
+    {"id": "candidate_compilation", "name": "Part 3 · 候选编译", "description": "规范化、去重、Typed DSL 与契约编译。", "layers": [5, 6], "color": "blue"},
+    {"id": "multifidelity_evaluation", "name": "Part 4 · 多保真评价", "description": "Probe、Surrogate、Critic、路由和完整评价。", "layers": [7, 8, 9], "color": "orange"},
+    {"id": "certificate_feedback", "name": "Part 5 · 证书与反馈", "description": "证书检查、研究档案与下一轮反馈。", "layers": [10], "color": "green"}
+  ]
+}

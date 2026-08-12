@@ -1,0 +1,105 @@
+{
+  "id": "public-demo-v3-2",
+  "task": "脱敏量子结构搜索演示",
+  "role_models": {
+    "scientific_director": "reasoning model",
+    "sota_research": "research model",
+    "theory_grammar": "reasoning model",
+    "theory_evolver": "reasoning model",
+    "empirical_evolver": "analysis model",
+    "novelty_evolver": "analysis model",
+    "independent_critic": "reasoning model"
+  },
+  "result": {
+    "status": "target_reached",
+    "method": "qasma-v3.2-public-demo",
+    "rounds": 2,
+    "b_full": 3,
+    "b_proxy": 8,
+    "b_llm": 11,
+    "config": {"target_error": 0.001},
+    "primary_metric": {"name": "演示 infidelity", "value": 0.00072, "lower_is_better": true},
+    "task": {"target_length": 8},
+    "best": {"energy_error": 0.00072, "actions": ["prepare", "entangle", "rotate", "uncompute", "verify"], "depth": 9, "n2q": 3},
+    "comparison": {
+      "comparable": false,
+      "baseline_label": "演示基线",
+      "current_label": "演示候选",
+      "scope_warning": "公开仓库中的数值为合成界面数据，不用于研究比较。"
+    },
+    "current_result_detail": "5 steps · depth 9 · 2q 3 · synthetic demo",
+    "agent_stats": {
+      "scientific_director": {"calls": 2}, "theory_grammar": {"calls": 2},
+      "theory_evolver": {"calls": 2}, "empirical_evolver": {"calls": 2},
+      "independent_critic": {"calls": 2}, "novelty_evolver": {"calls": 1}
+    },
+    "evaluator": {"surrogate": {"ready": true, "kind": "public demo ensemble", "training_points": 3}, "audit_selected": 1},
+    "records": [
+      {
+        "i": 1, "candidate_id": "demo-theory-01", "source_role": "theory_evolver", "round": 1,
+        "actions": ["prepare", "symmetric-entangle", "rotate", "uncompute"], "actions_are_gates": false,
+        "mechanism": "利用对称结构压缩重复操作。", "expected_gain": "减少冗余深度。", "risk": "对扰动较敏感。",
+        "proof_status": "empirical", "fidelity_level": "F3", "energy_error": 0.0048, "depth": 11, "n2q": 4,
+        "proxy": {"f1_probe_mean": 0.982, "f1_probe_min": 0.961, "surrogate_mean": 0.0061, "surrogate_std": 0.002, "acquisition": 0.79},
+        "critique": {"priority": "medium", "test": "增加分布外扰动探针"}, "certificate": {"level": "C2", "note": "numerical demo only"}
+      },
+      {
+        "i": 2, "candidate_id": "demo-empirical-02", "source_role": "empirical_evolver", "round": 1,
+        "actions": ["prepare", "entangle", "local-rewrite", "rotate", "verify"], "actions_are_gates": false,
+        "mechanism": "重用成功 motif，并修复高成本局部结构。", "expected_gain": "降低两比特资源。", "risk": "理论解释仍不完整。",
+        "proof_status": "solver_verified", "fidelity_level": "F4", "energy_error": 0.0016, "depth": 10, "n2q": 3,
+        "proxy": {"f1_probe_mean": 0.991, "f1_probe_min": 0.978, "surrogate_mean": 0.0023, "surrogate_std": 0.0008, "acquisition": 0.91},
+        "critique": {"priority": "high", "test": "检查边界条件与资源展开"}, "certificate": {"level": "C3", "note": "synthetic replay certificate"}
+      },
+      {
+        "i": 3, "candidate_id": "demo-novelty-03", "source_role": "novelty_evolver", "round": 2,
+        "actions": ["prepare", "entangle", "rotate", "uncompute", "verify"], "actions_are_gates": false,
+        "mechanism": "切换表示后组合理论候选与经验修复。", "expected_gain": "改善误差并保持资源受控。", "risk": "需要完整评价确认。",
+        "proof_status": "certified", "fidelity_level": "F4", "energy_error": 0.00072, "depth": 9, "n2q": 3,
+        "proxy": {"f1_probe_mean": 0.997, "f1_probe_min": 0.991, "surrogate_mean": 0.0009, "surrogate_std": 0.0003, "acquisition": 0.97},
+        "critique": {"priority": "highest", "test": "完整评价与证书重放"}, "certificate": {"level": "C4-demo", "note": "synthetic demonstration; not a research claim"}
+      }
+    ]
+  },
+  "events": [
+    {"sequence": 1, "timestamp": "demo T+00:00", "event": "run_started", "node_id": "run_control", "status": "running"},
+    {"sequence": 2, "timestamp": "demo T+00:01", "event": "node_completed", "node_id": "task_backend", "status": "completed"},
+    {"sequence": 3, "timestamp": "demo T+00:02", "event": "agent_call_completed", "node_id": "scientific_director", "role": "scientific_director", "expected_output": "ControlDecision"},
+    {"sequence": 4, "timestamp": "demo T+00:03", "event": "control_decision", "node_id": "scientific_director", "decision": {"round_goal": "探索满足约束的低深度结构"}},
+    {"sequence": 5, "timestamp": "demo T+00:04", "event": "theory_grammar", "node_id": "theory_grammar", "status": "completed"},
+    {"sequence": 6, "timestamp": "demo T+00:05", "event": "candidate_proposed", "node_id": "theory_evolver", "candidate_id": "demo-theory-01", "proposal": {"source_role": "theory_evolver", "actions": ["prepare", "symmetric-entangle", "rotate", "uncompute"]}},
+    {"sequence": 7, "timestamp": "demo T+00:05", "event": "candidate_proposed", "node_id": "empirical_evolver", "candidate_id": "demo-empirical-02", "proposal": {"source_role": "empirical_evolver", "actions": ["prepare", "entangle", "local-rewrite", "rotate", "verify"]}},
+    {"sequence": 8, "timestamp": "demo T+00:06", "event": "node_completed", "node_id": "candidate_normalization", "status": "completed"},
+    {"sequence": 9, "timestamp": "demo T+00:07", "event": "node_completed", "node_id": "dsl_contract_compile", "status": "completed"},
+    {"sequence": 10, "timestamp": "demo T+00:08", "event": "candidate_proxy_evaluated", "node_id": "lowcost_surrogate", "candidate_id": "demo-theory-01", "assessment": {"f1_probe_mean": 0.982, "acquisition": 0.79}},
+    {"sequence": 11, "timestamp": "demo T+00:09", "event": "critique", "node_id": "independent_critic", "critique": {"critiques": [{"candidate_id": "demo-theory-01"}, {"candidate_id": "demo-empirical-02"}]}},
+    {"sequence": 12, "timestamp": "demo T+00:10", "event": "node_completed", "node_id": "multifidelity_route", "status": "completed"},
+    {"sequence": 13, "timestamp": "demo T+00:12", "event": "candidate_evaluated", "node_id": "full_evaluation", "candidate_id": "demo-theory-01", "fidelity_level": "F3", "metrics": {"energy_error": 0.0048}},
+    {"sequence": 14, "timestamp": "demo T+00:13", "event": "candidate_evaluated", "node_id": "full_evaluation", "candidate_id": "demo-empirical-02", "fidelity_level": "F4", "metrics": {"energy_error": 0.0016}},
+    {"sequence": 15, "timestamp": "demo T+00:14", "event": "round_completed", "node_id": "certificate_archive", "status": "completed"},
+    {"sequence": 16, "timestamp": "demo T+00:15", "event": "candidate_proposed", "node_id": "novelty_evolver", "candidate_id": "demo-novelty-03", "proposal": {"source_role": "novelty_evolver", "actions": ["prepare", "entangle", "rotate", "uncompute", "verify"]}},
+    {"sequence": 17, "timestamp": "demo T+00:17", "event": "candidate_proxy_evaluated", "node_id": "lowcost_surrogate", "candidate_id": "demo-novelty-03", "assessment": {"f1_probe_mean": 0.997, "acquisition": 0.97}},
+    {"sequence": 18, "timestamp": "demo T+00:19", "event": "candidate_evaluated", "node_id": "full_evaluation", "candidate_id": "demo-novelty-03", "fidelity_level": "F4", "metrics": {"energy_error": 0.00072}},
+    {"sequence": 19, "timestamp": "demo T+00:20", "event": "certificate_checked", "node_id": "certificate_archive", "candidate_id": "demo-novelty-03", "status": "completed"},
+    {"sequence": 20, "timestamp": "demo T+00:21", "event": "run_completed", "node_id": "run_control", "status": "target_reached"}
+  ],
+  "node_runtime": {
+    "run_control": {"status": "completed", "event_count": 2, "first_sequence": 1, "last_sequence": 20, "last_event": "run_completed"},
+    "evidence_budget": {"status": "completed", "event_count": 20, "first_sequence": 1, "last_sequence": 20, "last_event": "run_completed", "metrics": {"B_full": 3, "B_proxy": 8}},
+    "sota_gate": {"status": "not_triggered", "event_count": 0},
+    "task_backend": {"status": "completed", "event_count": 1, "first_sequence": 2, "last_sequence": 2, "last_event": "node_completed"},
+    "scientific_director": {"status": "completed", "event_count": 2, "first_sequence": 3, "last_sequence": 4, "last_event": "control_decision"},
+    "sota_research": {"status": "not_triggered", "event_count": 0},
+    "theory_grammar": {"status": "completed", "event_count": 1, "first_sequence": 5, "last_sequence": 5, "last_event": "theory_grammar"},
+    "theory_evolver": {"status": "completed", "event_count": 1, "first_sequence": 6, "last_sequence": 6, "last_event": "candidate_proposed"},
+    "empirical_evolver": {"status": "completed", "event_count": 1, "first_sequence": 7, "last_sequence": 7, "last_event": "candidate_proposed"},
+    "novelty_evolver": {"status": "completed", "event_count": 1, "first_sequence": 16, "last_sequence": 16, "last_event": "candidate_proposed"},
+    "candidate_normalization": {"status": "completed", "event_count": 1, "first_sequence": 8, "last_sequence": 8, "last_event": "node_completed"},
+    "dsl_contract_compile": {"status": "completed", "event_count": 1, "first_sequence": 9, "last_sequence": 9, "last_event": "node_completed"},
+    "lowcost_surrogate": {"status": "completed", "event_count": 2, "first_sequence": 10, "last_sequence": 17, "last_event": "candidate_proxy_evaluated"},
+    "independent_critic": {"status": "completed", "event_count": 1, "first_sequence": 11, "last_sequence": 11, "last_event": "critique"},
+    "multifidelity_route": {"status": "completed", "event_count": 1, "first_sequence": 12, "last_sequence": 12, "last_event": "node_completed"},
+    "full_evaluation": {"status": "completed", "event_count": 3, "first_sequence": 13, "last_sequence": 18, "last_event": "candidate_evaluated"},
+    "certificate_archive": {"status": "completed", "event_count": 2, "first_sequence": 15, "last_sequence": 19, "last_event": "certificate_checked"}
+  }
+}

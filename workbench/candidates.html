@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QASMA 公开候选线路</title><link rel="stylesheet" href="styles.css"></head>
+<body class="content-page">
+  <header class="app-header">
+    <a class="app-brand" href="./index.html"><span class="brand-mark">Q</span><span><b>QASMA v3.2</b><small>公开架构工作台</small></span></a>
+    <nav class="app-nav"><a href="./index.html">工作流</a><a href="./dashboard.html">运行总览</a><a class="active" href="./candidates.html">候选线路</a><a href="./events.html">事件日志</a></nav>
+    <div class="header-run"><select id="run-select"></select><span id="live-badge" class="status-badge">等待数据</span></div>
+  </header>
+  <main class="content-main">
+    <header class="page-title"><div><span>PUBLIC DEMO</span><h1>候选线路</h1><p>通过脱敏示例查看候选来源、F1/F2/F3/F4 指标、Critic 与证书。</p></div>
+      <label class="page-search"><input id="candidate-search" placeholder="查找 candidate ID、来源或 gate"></label></header>
+    <section id="candidate-summary" class="metric-grid compact"></section>
+    <section id="candidates" class="candidate-grid"></section>
+  </main>
+  <script type="module" src="candidates.js"></script>
+</body></html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QASMA 公开演示总览</title><link rel="stylesheet" href="styles.css"></head>
+<body class="content-page">
+  <header class="app-header">
+    <a class="app-brand" href="./index.html"><span class="brand-mark">Q</span><span><b>QASMA v3.2</b><small>公开架构工作台</small></span></a>
+    <nav class="app-nav"><a href="./index.html">工作流</a><a class="active" href="./dashboard.html">运行总览</a><a href="./candidates.html">候选线路</a><a href="./events.html">事件日志</a></nav>
+    <div class="header-run"><select id="run-select"></select><span id="live-badge" class="status-badge">等待数据</span></div>
+  </header>
+  <main class="content-main">
+    <header class="page-title"><div><span>PUBLIC DEMO</span><h1>运行总览</h1><p>使用脱敏示例数据展示预算、收敛、节点路径、Surrogate 和证书状态。</p></div></header>
+    <section id="metrics" class="metric-grid"></section>
+    <section class="content-card sota-comparison-card"><header><h2>基线、作用域与演示证据</h2><span>示例数值不代表真实实验结果</span></header><div id="sota-comparison"></div></section>
+    <section class="content-grid two-columns">
+      <article class="content-card"><header><h2>搜索收敛</h2><span>best-so-far</span></header><div id="curve" class="curve"></div></article>
+      <article class="content-card"><header><h2>Evaluator 状态</h2><span>F0–F4</span></header><div id="evaluator" class="evaluator-list"></div></article>
+    </section>
+    <section class="content-card"><header><h2>本次实际运行路径</h2><span>点击节点返回工作流画布定位</span></header><div id="run-path" class="run-path-grid"></div></section>
+  </main>
+  <script type="module" src="dashboard.js"></script>
+</body></html>

@@ -1,0 +1,13 @@
+{
+  "name": "qasma-public-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Public, frontend-only visualization of the QASMA v3.2 multi-agent architecture.",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
