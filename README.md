@@ -2,9 +2,7 @@
 
 QASMA（Quantum Architecture Search Multi-Agent）是一个面向量子架构搜索的多 Agent 研究框架。它把搜索组织为“任务冻结—理论规划—并行候选生成—确定性编译—多保真评价—证据反馈”的闭环：LLM Agent 负责需要创造力的科学推理，代码化的编译器、求解器和评价器负责裁决可验证事实。
 
-前端工作台演示页面已部署在 [https://qasma.vercel.app](https://qasma.vercel.app)。
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHronrad%2FQASMA)
+[![QASMA Live Workbench](https://img.shields.io/badge/QASMA-Live_Workbench-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://qasma.vercel.app)
 
 ![QASMA 系统架构](assets/qasma-system-architecture.png)
 
