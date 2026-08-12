@@ -36,6 +36,26 @@ QASMA 保留少量、相互独立且职责互补的 Agent，避免把同一上�
 
 各 Agent 使用独立上下文，只取得与其职责相关的 archive 切片。Critic 不共享候选提出者的长上下文，Novelty Evolver 刻意减少当前精英信息，从而降低角色同质化和确认偏差。
 
+## 商业模型与 API 接入
+
+QASMA 的真实搜索后端通过统一的 LLM provider adapter 接入商业模型，Agent 不直接依赖某一家厂商的 SDK。适配层可连接 OpenAI-compatible Chat Completions API，也可接入复用本地登录状态的模型客户端或其他兼容 provider；具体模型按角色映射，因此 Director、Theory Evolver、Critic 等角色可以使用不同能力和成本档位的模型，而不改变上层搜索流程。
+
+```text
+Coordinator
+  → role-specific ContextBundle
+  → provider adapter
+  → commercial model API
+  → schema validation / JSON parsing
+  → ControlDecision、GrammarPlan、CandidateProposal 或 CritiqueBatch
+  → deterministic compiler and evaluator
+```
+
+每个 Agent 都拥有独立的 session、cache namespace、system/role prompt、上下文上限和输出 schema。发送给模型的 `ContextBundle` 只包含当前角色、任务摘要、选取后的研究记忆、候选证据、grammar 切片、搜索状态和所需输出格式，不会把完整仓库或无限增长的聊天历史提交给商业 API。
+
+API 密钥、base URL 和 provider 配置只应存在于服务端环境变量或密钥管理系统中，不能写入前端、演示 JSON、Git 历史或 Vercel 静态构建产物。公开工作台只读取脱敏结果，不会从浏览器直接调用商业模型。实际调用要求模型返回严格的结构化 JSON；核心角色调用失败、超时或违反 schema 时，本轮运行标记为失败或不完整，不使用随机搜索结果伪装成一次成功的 QASMA 运行。
+
+后端可以记录 provider/model、输入输出 token、缓存命中、wall time、失败原因和 session reuse，用于复现、限流和成本审计；这些商业 API 成本属于工程指标，不进入候选线路的科学质量目标，也不能替代 `B_full`、solver 时间和评价证据。
+
 ![QASMA v3.2 搜索闭环](assets/qasma-search-loop.png)
 
 ## 单轮搜索流程
